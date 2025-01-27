@@ -1,0 +1,26 @@
+services:
+    db:
+        image: postgres:latest
+        env_file:
+            - path: ./.env
+              required: true
+        privileged: true
+        restart: unless-stopped
+        environment:
+            - POSTGRES_DB=${POSTGRES_DB}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        ports:
+            - "${POSTGRES_EXTERNAL_PORT:-5454}:${POSTGRES_PORT:-5432}"
+        volumes:
+            - pg_data:/var/lib/postgresql/data/
+            - pg_conf:/etc/postgresql
+            - pg_log:/var/log/postgresql
+
+volumes:
+    pg_data:
+        driver: local
+    pg_conf:
+        driver: local
+    pg_log:
+        driver: local
