@@ -1,21 +1,50 @@
 services:
     db:
-        image: postgres:latest
-        env_file:
-            - path: ./.env
-              required: true
-        privileged: true
+        image: postgres:15-alpine
         restart: unless-stopped
         environment:
             - POSTGRES_DB=${POSTGRES_DB}
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
         ports:
-            - "${POSTGRES_EXTERNAL_PORT:-5454}:${POSTGRES_PORT:-5432}"
+            - "${POSTGRES_EXTERNAL_PORT:-5454}:5432"
         volumes:
             - pg_data:/var/lib/postgresql/data/
             - pg_conf:/etc/postgresql
             - pg_log:/var/log/postgresql
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        env_file:
+            - ./.env
+        command:
+            [
+                "poetry",
+                "run",
+                "uvicorn",
+                "main:app",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "${DOCKER_PROJECT_PORT_SERVER:-8000}",
+                "--reload",
+                "--log-level",
+                "debug",
+                "--use-colors",
+            ]
+        ports:
+            - ${DOCKER_PROJECT_EXTERNAL_PORT:-8000}:${PROJECT_PORT:-8000}
+        volumes:
+            - .:/project
+        depends_on:
+            db:
+                condition: service_healthy
 
 volumes:
     pg_data:

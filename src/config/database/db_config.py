@@ -15,9 +15,8 @@ class ConfigDataBase(BaseSettings):
     @property
     def database_url(self) -> Optional[PostgresDsn]:
         return (
-            f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@"
+            f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@"
             f"{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
         )
-
 
 settings_db = ConfigDataBase()
