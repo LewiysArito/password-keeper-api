@@ -12,7 +12,7 @@ db.sqlite3
 venv
 
 .env.dev
-**/.env
+.env
 
 __pycache__/
 */__pycache__/
@@ -36,3 +36,4 @@ make.bat
 
 doc-dev
 .vscode/*
+/certs
