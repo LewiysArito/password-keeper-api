@@ -2,7 +2,6 @@ from ..schemas.base_schema import PyModel
 from ..repositories.base_repository import AbstractRepository
 from ..repositories.sqlalchemy_repository import ModelType
 
-
 class BaseService:
     def __init__(self, repository: AbstractRepository)->None:
         self.repository = repository
