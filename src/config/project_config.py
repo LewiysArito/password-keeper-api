@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-class ProjectSettings(BaseSettings):
+class ProjectConfig(BaseSettings):
     DB_ECHO: bool
     NAME: str
     VERSION: str
@@ -8,6 +8,11 @@ class ProjectSettings(BaseSettings):
     CORS_ALLOWED_ORIGINS: str
     PORT: str
     
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", env_prefix='project_', extra="allow")
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_prefix='project_', 
+        extra="allow"
+    )
 
-project_settings = ProjectSettings()
+settings_project = ProjectConfig()
