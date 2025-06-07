@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.12-slim
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONFAULTHANDLER=1 \
@@ -11,6 +11,8 @@ RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
 
 COPY pyproject.toml poetry.lock* ./
 
-RUN poetry install --no-cache
+RUN poetry export --without-hashes --format=requirements.txt > requirements.txt
+
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .

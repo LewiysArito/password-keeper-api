@@ -13,7 +13,7 @@ services:
             - pg_conf:/etc/postgresql
             - pg_log:/var/log/postgresql
         healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+            test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
             interval: 5s
             timeout: 5s
             retries: 5

@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from typing import TypeVar
 from sqlalchemy import TIMESTAMP, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, declared_attr, mapped_column
 
@@ -22,3 +23,5 @@ class Base(DeclarativeBase):
         
         words = re.findall(r"[A-Z][a-z]*", cls.__name__)
         return "_".join(list(map(lambda a: a.lower(), words)))
+
+ModelType = TypeVar("ModelType", bound=Base)

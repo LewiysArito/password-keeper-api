@@ -8,7 +8,7 @@ class ConfigDatabase(BaseSettings):
     USER: str
     PASSWORD: str
     HOST: str
-    PORT: str
+    PORT: int
     DB: str
     DB_ECHO_LOG: bool = False
 

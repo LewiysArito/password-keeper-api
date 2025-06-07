@@ -20,6 +20,9 @@ class AuthJWTHelper:
         self._refresh_token_rotate_min_lifetime = refresh_token_rotate_min_lifetime
 
     def encode(self, payload: Dict[str, Any]) -> str:
+        """
+        Функция для создание токена доступа
+        """
         to_encode = payload.copy()
         now = datetime.now(timezone.utc)
         expire = now + timedelta(seconds=self._access_token_lifetime)
@@ -27,13 +30,17 @@ class AuthJWTHelper:
             exp=expire,
             iat=now
         )
+
         return jwt.encode(
             payload = to_encode,
             key = self._private_key,
-            algorithm=[self._algorithm]    
-        ) 
+            algorithm=self._algorithm
+        )
     
     def decode(self, token: bytes | str)->Dict[str, Any]:
+        """
+        Функция для проверки токена доступа
+        """
         try:
             return jwt.decode(
                 jwt = token,
@@ -41,9 +48,9 @@ class AuthJWTHelper:
                 algorithms=[self._algorithm]
             )
         except jwt.ExpiredSignatureError:
-            raise ValueError("Токен был просрочен")
+            raise jwt.PyJWTError("Token expired")
         except jwt.InvalidTokenError:
-            raise ValueError("Неверный токен")           
+            raise jwt.PyJWTError("Token is bad")
     
 jwt_helper = AuthJWTHelper(
     private_key = settings_auth_jwt.PRIVATE_KEY,
