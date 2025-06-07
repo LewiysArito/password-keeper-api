@@ -14,7 +14,8 @@ class AuthJWTConfig(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         env_prefix='auth_', 
-        case_sensitive=False
+        case_sensitive=False,
+        extra="allow"
     )
     
     @field_validator("PRIVATE_KEY_NAME")

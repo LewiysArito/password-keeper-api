@@ -1,10 +1,12 @@
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import ForeignKey, String, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from api.src.models.data_group_model import DataGroup
 from src.models.base_model import Base
+
+if TYPE_CHECKING:
+    from src.models.data_group_model import DataGroup
 
 class SecretData(Base):
     """Модель для чувствительных данных пользователя"""

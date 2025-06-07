@@ -1,14 +1,15 @@
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from sqlalchemy import Boolean, ForeignKey, String, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models.base_model import Base 
-from src.models.user_group_permissions_model import UserGroupPermission
 
-class User(Base):
+if TYPE_CHECKING:
+    from src.models.user_group_permissions_model import UserGroupPermission 
+
+class UserTable(Base):
     """Модель пользователя"""
     __doc__ = "Пользователь приложения."
-    
     login: Mapped[str] = mapped_column(String(256), unique=True)
     password: Mapped[str] = mapped_column(String(256))
     email: Mapped[Optional[str]] = mapped_column(String(256), nullable=True, unique=True)
