@@ -1,5 +1,6 @@
+from typing import Any, Dict
 from fastapi import HTTPException 
-from src.auth.schemas.token_schemas import TokenInfo
+from src.auth.schemas.token_schemas import RefrashTokenInfo, TokenInfo
 from src.config.auth.auth_helper import jwt_helper
 from src.models.user_model import UserTable as UserModel
 from src.repositories.user_repository import UserRepository, user_repository
@@ -38,27 +39,65 @@ class AuthService(BaseService[UserModel, UserCreate, UserUpdate]):
         
         return await user_repository.create(model_with_hashed)
 
-    async def login_for_access_token(self, model: UserLogin)->TokenInfo:
+    async def login(self, model: UserLogin)->TokenInfo:
+        """
+        Залогиниться
+        """
         login_dict = {"login":model.login}
         user = await self._user_repository.get_one(**login_dict)
 
         if not user or not PasswordUtils.validate_password(model.password, user.password):
             raise HTTPException(status_code=401, detail="Incorrect login or password")
         
-        jwt_payload = {
-            "sub": str(user.id),
-            "username": user.login
-        }
-        
-        access_token = jwt_helper.encode(
-            jwt_payload
+        access_token = jwt_helper.create_access_token(
+            user.id,
+            user.login
+        )
+
+        refrash_token = jwt_helper.create_refrash_token(
+            user.id
         )
 
         return TokenInfo(
             access_token=access_token,
+            refrash_token=refrash_token,
             token_type="Bearer"
         )
     
+    async def refrash(self, decoded_token: Dict[str, Any]):
+        """
+        Обновляет токен
+        """
+        user_id = decoded_token.get("sub")
+        user = await self._user_repository.get_one(**{"id":int(user_id)})
+
+        access_token = jwt_helper.create_access_token(
+            user.id,
+            user.login
+        )
+
+        new_refrash_token = jwt_helper.create_refrash_token(
+            user.id
+        )
+
+        return TokenInfo(
+            access_token=access_token,
+            refrash_token=new_refrash_token,
+            token_type="Bearer"
+        )
+
+    async def logout(self):
+        """
+        Выйти из аккаунта
+        """
+        pass
+
+    async def logout_all(self):
+        """
+        Выйти со всех устройств
+        """
+        pass
+        
 
 auth_service = AuthService(
     repository=user_repository

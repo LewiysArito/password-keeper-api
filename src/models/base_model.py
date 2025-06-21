@@ -20,7 +20,7 @@ class Base(DeclarativeBase):
         """
         Переопределение магический метод, связанный с таблицей, формирование на основе имени класса 
         """
-        
+
         words = re.findall(r"[A-Z][a-z]*", cls.__name__)
         return "_".join(list(map(lambda a: a.lower(), words)))
 
