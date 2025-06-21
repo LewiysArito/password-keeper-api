@@ -2,6 +2,7 @@ import jwt
 from typing import Any, Dict
 from src.config.auth.auth_config import settings_auth_jwt
 from datetime import datetime, timezone, timedelta
+from src.constants.token_type_constants import TokenType
 
 class AuthJWTHelper:
     def __init__(self,
@@ -19,13 +20,13 @@ class AuthJWTHelper:
         self._refresh_token_lifetime = refresh_token_lifetime
         self._refresh_token_rotate_min_lifetime = refresh_token_rotate_min_lifetime
 
-    def encode(self, payload: Dict[str, Any]) -> str:
+    def encode_token(self, payload: Dict[str, Any], token_lifetime: int) -> str:
         """
-        Функция для создание токена доступа
+        Функция для создание токена
         """
         to_encode = payload.copy()
         now = datetime.now(timezone.utc)
-        expire = now + timedelta(seconds=self._access_token_lifetime)
+        expire = now + timedelta(minutes=token_lifetime)
         to_encode.update(
             exp=expire,
             iat=now
@@ -37,7 +38,31 @@ class AuthJWTHelper:
             algorithm=self._algorithm
         )
     
-    def decode(self, token: bytes | str)->Dict[str, Any]:
+    def create_access_token(self, sub: str | int, username: str):
+        """
+        Функции для создания токена доступа
+        :param sub: идентификатор пользователя
+        :param username: имя пользователя 
+        """
+        jwt_payload = {
+            "sub": str(sub),
+            "username": username,
+            "type": TokenType.ACCESS_TOKEN_TYPE.value
+        }
+        return self.encode_token(jwt_payload, token_lifetime=self._access_token_lifetime)
+
+    def create_refrash_token(self, sub: str | int):
+        """
+        Cоздает refrash токена
+        :param: идентификатор пользователя
+        """
+        jwt_payload = {
+            "sub": str(sub),
+            "type": TokenType.REFRASH_TOKEN_TYPE.value
+        }
+        return self.encode_token(jwt_payload, token_lifetime=self._refresh_token_lifetime)
+    
+    def decode_token(self, token: bytes | str)->Dict[str, Any]:
         """
         Функция для проверки токена доступа
         """

@@ -1,6 +1,7 @@
 from pathlib import Path
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlalchemy import Enum
 
 class AuthJWTConfig(BaseSettings):
     ACCESS_TOKEN_LIFETIME: int

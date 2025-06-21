@@ -1,6 +1,7 @@
 services:
     db:
         image: postgres:15-alpine
+        container_name: postgres-server
         restart: unless-stopped
         environment:
             - POSTGRES_DB=${POSTGRES_DB}
@@ -17,10 +18,12 @@ services:
             interval: 5s
             timeout: 5s
             retries: 5
+            
     app:
         build:
             context: .
             dockerfile: Dockerfile
+        container_name: password-base-server
         env_file:
             - ./.env
         command:
@@ -46,10 +49,24 @@ services:
             db:
                 condition: service_healthy
 
+    redis:
+        image: redis:8.0-bookworm
+        restart: unless-stopped
+        container_name: redis-server
+        ports:
+            - "${DOCKER_REDIS_EXTRENAL_PORT:-6380}:6379"
+        environment:
+            - REDIS_PASSWORD=${REDIS_PASSWORD}
+            - REDIS_LOGIN=${REDIS_LOGIN}
+        volumes:
+            - redis_data:/data
+
 volumes:
     pg_data:
         driver: local
     pg_conf:
         driver: local
     pg_log:
+        driver: local
+    redis_data:
         driver: local

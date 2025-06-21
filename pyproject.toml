@@ -26,6 +26,7 @@ flake8-variables-names = "^0.0.6"
 black = "^25.1.0"
 mypy = "^1.15.0"
 python-multipart = "^0.0.20"
+redis = "^6.2.0"
 
 [tool.black]
 line-length = 120
