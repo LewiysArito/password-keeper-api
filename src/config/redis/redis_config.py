@@ -8,6 +8,7 @@ class ConfigRedis(BaseSettings):
     HOST: str
     PORT: int = 6379
     DB_NUMBER: int = 0
+    SESSION_COUNT: int = 5
 
     model_config = SettingsConfigDict(
         env_file=".env",
